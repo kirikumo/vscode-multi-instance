@@ -1,0 +1,5 @@
+portable-data/
+.vscode/
+usr/
+*.desktop
+*.deb
