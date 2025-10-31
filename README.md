@@ -1,8 +1,8 @@
-# VSCode Portable Setup
+# VSCode Multi-Instance Setup
 
-This project is a set of scripts for quickly setting up a portable installation of Visual Studio Code 1.98.2 for Linux, including a custom desktop launcher and user data isolation. It is not a full distribution—just an automation tool for easy setup.
+This project provides scripts for quickly setting up multiple portable instances of Visual Studio Code with version isolation. Each instance runs independently with its own user data, extensions, and window identification. Currently configured for version 1.98.2 as an example.
 
-> **Note:** The version "1.98.2" is used here as a demo. You can replace it with any other VSCode version by updating the scripts and filenames accordingly.
+> **Note:** You can create multiple instances with different versions by copying the scripts and updating the version numbers. Each instance maintains separate settings and extensions.
 
 ## Features
 
@@ -13,9 +13,12 @@ This project is a set of scripts for quickly setting up a portable installation 
 
 ## Setup Instructions
 
-1. **Download and Extract**
-   - Place all files in a directory of your choice.
-   - If you want to use a different VSCode version, update the version number in `setup-1_98_2.sh`.
+1. **Clone and Configure**
+
+   ```bash
+   git clone https://github.com/kirikumo/vscode-multi-instance.git
+   cd vscode-multi-instance
+   ```
 
 2. **Run the Setup Script**
 
@@ -23,12 +26,11 @@ This project is a set of scripts for quickly setting up a portable installation 
    bash setup-1_98_2.sh
    ```
 
-   This will:
-   - Download the VSCode 1.98.2 `.deb` package (or your chosen version)
-   - Extract it locally
-   - Change vscode icon to `vscode_yellow.png`
-   - Generate a desktop entry (e.g., `vscode-1.98.2.desktop`)
-   - Install the desktop entry (requires `sudo`)
+   This script will:
+   - Download VSCode 1.98.2 `.deb` package
+   - Extract it locally into `usr/`
+   - Set up a yellow icon for easy identification
+   - Create and install a desktop entry with unique window class
 
 3. **Launch VSCode**
    - Use the desktop menu entry: **VSCode 1.98**
@@ -38,22 +40,25 @@ This project is a set of scripts for quickly setting up a portable installation 
      bash start-target-vscode.sh 1.98.2
      ```
 
-## File Overview
+## Project Structure
 
-- `setup-1_98_2.sh` — Main setup script (download, extract, desktop integration)
-- `start-target-vscode.sh` — Launch script (sets up portable data, WM_CLASS, etc.)
-- `vscode_yellow.png` — Custom icon
-- `vscode-1.98.2.desktop` — Generated desktop entry
-- `portable-data/` — User data and extensions are stored here
-- `usr/` — Extracted VSCode files
+- `setup-1_98_2.sh` — Setup script that downloads and configures VSCode
+- `start-target-vscode.sh` — Launch script with version isolation and window management
+- `vscode_yellow.png` — Custom icon for easy identification
+- `portable-data/` — Contains isolated user data and extensions
+- `usr/` — Contains the extracted VSCode installation
+- `vscode-1.98.2.deb` — Downloaded VSCode package
+- `vscode-1.98.2.desktop` — Generated desktop entry with unique window class
 
-## Notes
+## Key Features Explained
 
-- The desktop entry uses the custom icon and ensures each VSCode window is uniquely identified by version.
-- You can run multiple portable VSCode versions by duplicating this folder and updating the version in the scripts and filenames.
-- No files are installed outside this directory except the desktop entry and icon (for menu integration).
+- **Version Isolation**: Each instance has its own settings, extensions, and window identification
+- **Custom Window Class**: Uses `WM_CLASS` to help window managers identify different versions
+- **Portable Data**: All user data and extensions are contained in `portable-data/`
+- **Desktop Integration**: Only the `.desktop` file is installed system-wide for launcher integration
+- **Multiple Instances**: Create more instances by copying the directory and updating version numbers
 
-## Uninstall
+## Cleanup
 
 To remove the desktop entry:
 
