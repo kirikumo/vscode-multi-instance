@@ -1,19 +1,29 @@
 #!/bin/bash
+set -euo pipefail
 
-VSCODE_VSERSION=$1
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <version> [vscode-args...]"
+    echo "Example: $0 1.98.2"
+    exit 1
+fi
+
+VSCODE_VERSION=$1
 shift
 
+# Check for required tool
+if ! command -v xdotool >/dev/null 2>&1; then
+    echo "Warning: xdotool not found. Window class setting will be skipped."
+fi
+
 BASEPATH=$(cd "$(dirname "$0")" && pwd)
-
-
-PROTABLE_DATA_DIR=$BASEPATH/portable-data
-if [ ! -d "$PROTABLE_DATA_DIR" ]; then
-    mkdir "$PROTABLE_DATA_DIR"
+PORTABLE_DATA_DIR=$BASEPATH/portable-data
+if [ ! -d "$PORTABLE_DATA_DIR" ]; then
+    mkdir "$PORTABLE_DATA_DIR"
 fi
 
 VSCODE_PATH=$BASEPATH/usr/share/code
-USER_DATA_DIR=$PROTABLE_DATA_DIR/user-data
-EXTENSIONS_DIR=$PROTABLE_DATA_DIR/extensions
+USER_DATA_DIR=$PORTABLE_DATA_DIR/user-data
+EXTENSIONS_DIR=$PORTABLE_DATA_DIR/extensions
 
 # Check if VSCode path exists
 if [ ! -d "$VSCODE_PATH" ]; then
@@ -78,8 +88,14 @@ for i in $(seq 1 $MAX_WAIT); do
 done
 
 if [ -n "$NEW_WINDOW_ID" ]; then
-    echo "Set WM_CLASS to VSCode-$VSCODE_VSERSION on window id $NEW_WINDOW_ID"
-    xprop -id $NEW_WINDOW_ID -f WM_CLASS 8s -set WM_CLASS "VSCode-$VSCODE_VSERSION"
+    echo "Setting window class for VSCode-$VSCODE_VERSION..."
+    if xprop -id "$NEW_WINDOW_ID" -f WM_CLASS 8s -set WM_CLASS "VSCode-$VSCODE_VERSION" 2>/dev/null; then
+        echo "Successfully set WM_CLASS"
+    else
+        echo "Warning: Failed to set window class"
+    fi
+else
+    echo "Warning: Could not find VSCode window"
 fi
 
 exit 0
